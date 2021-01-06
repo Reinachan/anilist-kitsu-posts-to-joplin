@@ -1,0 +1,38 @@
+query ProfileActivities($id: Int, $page: Int, $perPage: Int) {
+	Page(page: $page, perPage: $perPage) {
+		pageInfo {
+			total
+			perPage
+			currentPage
+			lastPage
+			hasNextPage
+		}
+		activities(userId: $id, type: TEXT, sort: ID_DESC) {
+			... on TextActivity {
+				id
+				type
+				replyCount
+				likeCount
+				text(asHtml: false)
+				createdAt
+				user {
+					id
+					name
+					avatar {
+						large
+					}
+				}
+				replies {
+					likeCount
+					user {
+						name
+						avatar {
+							large
+						}
+					}
+					text
+				}
+			}
+		}
+	}
+}
