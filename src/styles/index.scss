@@ -1,0 +1,77 @@
+body {
+	font-family: Arial, Helvetica, sans-serif;
+	margin: 0;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+// defaults
+input[type='submit'] {
+	margin-top: 10px;
+	background-color: var(--main-button);
+	color: var(--main-text);
+	border: none;
+	padding: 5px;
+}
+
+input[type='text'] {
+	background-color: var(--background);
+	color: var(--main-text);
+	border: none;
+	border-radius: 5px;
+	padding-left: 10px;
+	height: 1.7rem;
+}
+
+fieldset {
+	background-color: var(--foreground);
+	margin-bottom: 20px;
+	padding: 10px 20px 30px 20px;
+	border: none;
+	box-shadow: 0 10px 10px var(--shadows);
+	border-radius: 5px;
+
+	legend {
+		padding: 0;
+		font-size: 1.3rem;
+		margin: 0 0 15px 0;
+		font-weight: bold;
+		position: relative;
+		text-align: center;
+
+		&::before {
+			content: '';
+			z-index: 1;
+
+			position: absolute;
+			left: 0;
+			top: 50%;
+			transform: translateY(-50%);
+
+			width: 100%;
+			height: 2px;
+
+			background: var(--secondary-text);
+		}
+
+		span {
+			position: relative;
+			z-index: 2;
+
+			background: var(--foreground);
+			padding: 5px 20px;
+
+			font-weight: 700;
+			font-size: 1.5rem;
+			text-transform: uppercase;
+
+			display: inline-block;
+
+			color: white;
+		}
+	}
+	small {
+		color: var(--secondary-text);
+		display: block;
+	}
+}

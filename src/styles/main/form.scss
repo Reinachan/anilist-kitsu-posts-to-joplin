@@ -1,0 +1,70 @@
+@import '../variables.scss';
+
+form {
+	grid-column: 3;
+}
+
+.fields {
+	display: grid;
+	grid-template-rows: repeat(auto);
+	row-gap: 15px;
+}
+
+.field-group {
+	display: grid;
+	grid-template-columns: 1.2fr auto 4fr;
+	grid-template-rows: 1fr auto;
+	column-gap: 5px;
+	row-gap: 10px;
+
+	label {
+		margin: 5px 0;
+	}
+
+	small {
+		grid-column: span 2/4;
+		padding-left: 5px;
+	}
+
+	input[type='text'] {
+		grid-column: span 2/4;
+		margin-top: auto;
+		margin-bottom: auto;
+	}
+
+	@media only screen and (max-width: $ex-sm-display) {
+		grid-template-columns: auto;
+		grid-template-rows: 1fr auto auto;
+
+		small {
+			grid-column: 1;
+		}
+		input[type='text'] {
+			grid-column: 1;
+		}
+	}
+}
+
+.form-group {
+	display: grid;
+	grid-template-columns: 1fr 20fr 1fr;
+	grid-template-rows: auto auto auto;
+	column-gap: 5px;
+	row-gap: 5px;
+	grid-template-areas:
+		'inpu lb ....'
+		'.... sm ....'
+		'.... su ....';
+	input[type='submit'] {
+		grid-area: su;
+	}
+	input[type='checkbox'] {
+		grid-area: inpu;
+	}
+	label {
+		grid-area: lb;
+	}
+	small {
+		grid-area: sm;
+	}
+}

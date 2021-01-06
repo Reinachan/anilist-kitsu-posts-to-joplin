@@ -1,0 +1,28 @@
+:root {
+	--main-text: #fff;
+	--secondary-text: #dedede;
+	--inactive-text: #aaa;
+	--background: #060c0d;
+	--foreground: #14191f;
+	--background-main: #0e1216;
+	--background-foreground-alt: #12171d;
+	--main-button: #1669d6;
+	--shadows: var(--background);
+}
+
+// Screen Sizes
+$ex-sm-display: 600px;
+$sm-display: 768px;
+$m-display: 992px;
+$l-display: 1200px;
+$ex-l-display: 2000px;
+
+/* --color-footer: #11161d;
+--color-blue: 120, 180, 255;
+--color-shadow-blue: 0, 0, 0;
+--color-foreground: 20, 25, 31;
+--color-foreground-alt: 18, 23, 29;
+--color-background: 14, 18, 22;
+--color-foreground-blue: 26, 33, 45;
+--color-foreground-grey: 15, 22, 28;
+--color-foreground-grey-dark: 6, 12, 13; */

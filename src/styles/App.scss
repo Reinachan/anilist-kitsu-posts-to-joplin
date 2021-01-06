@@ -1,0 +1,91 @@
+@import './variables.scss';
+
+body {
+	background-color: var(--background);
+	color: var(--main-text);
+	box-sizing: border-box;
+}
+.header {
+	background-color: var(--background);
+	margin: 10px;
+	height: 200px;
+	box-shadow: 0 5px 10px var(--shadows);
+	@media only screen and (max-width: $ex-sm-display) {
+		min-height: 300px;
+	}
+	p,
+	h2 {
+		color: var(--secondary-text);
+	}
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+p {
+	margin: 2px 0;
+}
+
+h1 {
+	font-size: 2.2rem;
+}
+
+h2 {
+	font-size: 1.3rem;
+}
+
+.main {
+	background-color: var(--background-main);
+	margin-bottom: 20px;
+	padding: 10px;
+	padding-top: 30px;
+}
+
+.main,
+.header {
+	display: grid;
+	grid-template-columns:
+		minmax(10px, 1fr)
+		minmax(10px, 1fr)
+		920px
+		minmax(10px, 1fr)
+		minmax(10px, 1fr);
+
+	@media only screen and (max-width: $m-display) {
+		grid-template-columns:
+			minmax(10px, 1fr)
+			minmax(10px, 1fr)
+			minmax(600px, 700px)
+			minmax(10px, 1fr)
+			minmax(10px, 1fr);
+	}
+	@media only screen and (max-width: $sm-display) {
+		grid-template-columns:
+			minmax(0, 1fr)
+			minmax(2px, 1fr)
+			minmax(auto, 600px)
+			minmax(2px, 1fr)
+			minmax(0, 1fr);
+	}
+}
+.header {
+	grid-template-rows: 1fr auto auto auto 0.1fr;
+
+	h1,
+	h2,
+	p {
+		grid-column-start: 3;
+		padding: 0 20px;
+	}
+	h1 {
+		grid-row-start: 2;
+	}
+	h2 {
+		grid-row-start: 3;
+	}
+	p {
+		grid-row-start: 4;
+	}
+}

@@ -1,0 +1,67 @@
+@import '../variables.scss';
+
+.notebook-group {
+	display: grid;
+	grid-template-columns: 1.2fr auto 4fr;
+	grid-template-rows: 1fr auto;
+	column-gap: 5px;
+	row-gap: 10px;
+
+	label {
+		margin: 5px 0;
+	}
+
+	p {
+		grid-column: span 2/4;
+		padding-left: 5px;
+	}
+
+	input[type='text'] {
+		grid-column: span 2/4;
+		margin-top: auto;
+		margin-bottom: auto;
+	}
+	input[type='submit'] {
+		grid-column: span 2/4;
+	}
+
+	@media only screen and (max-width: $ex-sm-display) {
+		grid-template-columns: auto;
+		grid-template-rows: 1fr auto auto;
+
+		p {
+			grid-column: 1;
+		}
+		input[type='text'] {
+			grid-column: 1;
+		}
+		input[type='submit'] {
+			grid-column: 1;
+		}
+	}
+}
+
+.show-notebooks {
+	margin-top: 30px;
+	display: grid;
+	grid-template-columns: auto auto;
+	grid-template-rows: 1fr repeat(1fr);
+	row-gap: 10px;
+	column-gap: 10px;
+
+	.notebook {
+		border-radius: 5px;
+		background-color: var(--background);
+		padding: 15px 20px;
+
+		h3 {
+			margin-bottom: 5px;
+		}
+		p {
+			color: var(--secondary-text);
+		}
+	}
+	@media only screen and (max-width: $sm-display) {
+		grid-template-columns: auto;
+	}
+}
