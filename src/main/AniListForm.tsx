@@ -61,53 +61,46 @@ export default function AniListForm() {
 				perPage: 30,
 			},
 		});
-	};
-
-	if (called && loading) {
-		return <p className='loading-content'>loading stuff</p>;
-	}
-
-	if (called && !data) {
-		return <div>{error}</div>;
-	}
-
-	if (called && error) {
-		return <div>{error}</div>;
-	}
-
-	if (data) {
-		var notebookID: string = getValues('notebookId');
-		var joplinPort: string = getValues('joplinPort');
-		var joplinAccessToken: string = getValues('joplinAccessToken');
-
-		console.log(notebookID, joplinPort, joplinAccessToken);
-
-		const activities: any = data.Page?.activities;
-
-		for (let prop in activities) {
-			let i: number = Number(prop);
-
-			const activity = activities[i];
-
-			sendToJoplin(
-				activity.id,
-				postTitle(activity.text),
-				notebookID,
-				formatPost(activity),
-				activity.createdAt,
-				joplinPort,
-				joplinAccessToken
-			);
+		if (called && loading) {
+			return <p className='loading-content'>loading stuff</p>;
 		}
 
-		/* return (
-			<TextActivity>
-				{data.Page?.activities?.map((x: any) => (
-					<div>{AniListMarkdown(x.text)}</div>
-				))}
-			</TextActivity>
-		); */
-	}
+		if (called && !data) {
+			return <div>{error}</div>;
+		}
+
+		if (called && error) {
+			return <div>{error}</div>;
+		}
+
+		if (called && data) {
+			var notebookID: string = props.notebookId;
+			var joplinPort: string = props.joplinPort;
+			var joplinAccessToken: string = props.joplinAccessToken;
+
+			console.log(notebookID, joplinPort, joplinAccessToken);
+			console.log(`http://localhost:${joplinPort}/notes?token=${joplinAccessToken}`);
+			console.log(data);
+
+			const activities: any = data.Page?.activities;
+
+			for (let prop in activities) {
+				let i: number = Number(prop);
+
+				const activity = activities[i];
+
+				sendToJoplin(
+					activity.id,
+					postTitle(activity.text),
+					notebookID,
+					formatPost(activity),
+					activity.createdAt,
+					joplinPort,
+					joplinAccessToken
+				);
+			}
+		}
+	};
 
 	return (
 		<>

@@ -6,8 +6,8 @@ interface notebook {
 
 export default function NotebookIDs(props: notebook) {
 	return (
-		<div className='notebook'>
-			<div className='individual-notes' key={props.notebook.id}>
+		<div className='notebook' key={props.notebook.id}>
+			<div className='individual-notes'>
 				<h3>{props.notebook.title}</h3>
 				<p>{props.notebook.id}</p>
 			</div>
