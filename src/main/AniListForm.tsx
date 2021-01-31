@@ -1,110 +1,101 @@
-import react from 'react';
+import react, { useState } from 'react';
 
-import { useForm } from 'react-hook-form';
-
+// GraphQL/API
 import { useProfileActivitiesLazyQuery } from '../graphql/generated/graphql-generated';
+import sendToJoplin from '../logic/sendToJoplin';
 
+// Form Components
+import TextInput from '../components/form/TextInput';
+import Checkbox from '../components/form/Checkbox';
+
+// Custom Hooks
+/* import useInput from '../logic/useInput'; */
+
+// Custom Code
 import { formatPost } from '../logic/formatLayoutPoster';
 import { postTitle } from '../logic/postTitle';
 
 import '../styles/main/form.scss';
 
-export default function AniListForm() {
-	const [getAniListStuff, { called, loading, data, error }] = useProfileActivitiesLazyQuery();
+export default function AniListForm(this: any) {
+	const [token, setToken] = useState();
+	const [port, setPort] = useState('41184');
+	const [notebookId, setNoteId] = useState();
+	const [userId, setUserId] = useState();
+	const [fetchAll, setFetchAll] = useState(false);
 
-	const { register, getValues, handleSubmit, errors } = useForm();
+	const [page, setPage] = useState(1);
 
-	const sendToJoplin = (
-		id: any,
-		title: any,
-		parentId: string,
-		body: any,
-		createdTime: any,
-		port: string,
-		accessToken: string
-	) => {
-		const toJoplin = {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				id: id,
-				title: title,
-				parent_id: parentId,
-				body: body,
-				created_time: createdTime,
-				user_created_time: createdTime,
-			}),
-		};
-		/* console.log(
-			JSON.stringify({
-				id: id,
-				title: title,
-				parent_id: parentId,
-				body: body,
-				created_time: createdTime,
-				user_created_time: createdTime,
-			})
-		); */
+	const [
+		getAniListStuff,
+		{ called, loading, data, error },
+	] = useProfileActivitiesLazyQuery();
 
-		console.log(port, accessToken, parentId);
+	if (called && loading) {
+		return <p className='loading-content'>loading stuff</p>;
+	}
 
-		fetch(`http://localhost:${port}/notes?token=${accessToken}`, toJoplin);
-	};
+	if (called && !data) {
+		return <div>{error}</div>;
+	}
 
-	const onSubmit = (props: any) => {
-		getAniListStuff({
-			variables: {
-				id: props.anilistUserId,
-				page: 1,
-				perPage: 30,
-			},
-		});
-		if (called && loading) {
-			return <p className='loading-content'>loading stuff</p>;
+	if (called && error) {
+		return <div>{error}</div>;
+	}
+
+	if (called && data) {
+		const activities: any = data.Page?.activities;
+
+		for (let prop in activities) {
+			let i: number = Number(prop);
+
+			const activity = activities[i];
+
+			sendToJoplin(
+				activity.id,
+				postTitle(activity.text),
+				notebookId,
+				formatPost(activity),
+				activity.createdAt,
+				port,
+				token
+			);
 		}
+	}
 
-		if (called && !data) {
-			return <div>{error}</div>;
-		}
+	const handleSubmit = (e: any) => {
+		e.preventDefault();
+		console.log(token);
+		console.log(port);
+		console.log(notebookId);
+		console.log(userId);
+		console.log(fetchAll);
 
-		if (called && error) {
-			return <div>{error}</div>;
-		}
-
-		if (called && data) {
-			var notebookID: string = props.notebookId;
-			var joplinPort: string = props.joplinPort;
-			var joplinAccessToken: string = props.joplinAccessToken;
-
-			console.log(notebookID, joplinPort, joplinAccessToken);
-			console.log(`http://localhost:${joplinPort}/notes?token=${joplinAccessToken}`);
-			console.log(data);
-
-			const activities: any = data.Page?.activities;
-
-			for (let prop in activities) {
-				let i: number = Number(prop);
-
-				const activity = activities[i];
-
-				sendToJoplin(
-					activity.id,
-					postTitle(activity.text),
-					notebookID,
-					formatPost(activity),
-					activity.createdAt,
-					joplinPort,
-					joplinAccessToken
-				);
+		if (!fetchAll && token && port && notebookId && userId) {
+			getAniListStuff({
+				variables: {
+					id: userId,
+					page: 1,
+					perPage: 50,
+				},
+			});
+		} else if (fetchAll && token && port && notebookId && userId && page) {
+			getAniListStuff({
+				variables: {
+					id: userId,
+					page: page,
+					perPage: 50,
+				},
+			});
+			if (data?.Page?.pageInfo?.hasNextPage) {
+				setPage(page + 1);
 			}
 		}
 	};
 
 	return (
 		<>
-			<form onSubmit={handleSubmit(onSubmit)}>
+			<form onSubmit={handleSubmit}>
 				<fieldset className='joplin-stuff'>
 					<div className='legend'>
 						<legend>
@@ -112,59 +103,44 @@ export default function AniListForm() {
 						</legend>
 					</div>
 					<div className='fields'>
-						<div className='field-group'>
-							<label htmlFor='joplin-access-token' className='field-label'>
-								Joplin access-token
-							</label>
-							<input
-								name='joplinAccessToken'
-								type='text'
-								id='joplin-access-token'
-								className='field-input'
-								placeholder='access token'
-								ref={register}
-							/>
-							<small id='access-token-help' className='field-description'>
-								You can find it on a computer under settings &gt; Web Clipper. Make sure to enable
-								the webclipper as well.
-							</small>
-						</div>
-						<div className='field-group'>
-							<label htmlFor='joplin-port' className='field-label'>
-								Joplin port
-							</label>
-							<input
-								name='joplinPort'
-								type='text'
-								id='joplin-port'
-								defaultValue={41184}
-								className='field-input'
-								ref={register({
-									valueAsNumber: true,
-								})}
-							/>
-							<small id='joplin-port-help' className='field-description'>
-								You'll find this at the top of the same menu you found the access token in. It
-								should be 41184, but if not, you'll have to type in that number in the box above
-							</small>
-						</div>
-						<div className='field-group'>
-							<label htmlFor='notebook-id' className='field-label'>
-								Notebook ID
-							</label>
-							<input
-								name='notebookId'
-								type='text'
-								id='notebook-id'
-								className='field-input'
-								ref={register}
-							/>
-							<small id='joplin-notebook-help' className='field-description'>
-								For where you want to place it all in Joplin This one is a bit more complicated to
-								figure out, so I'll provide you with a tool to fetch all your notebook IDs easily
-								below
-							</small>
-						</div>
+						<TextInput
+							name='joplinAccessToken'
+							placeholder='access token'
+							label='Joplin access-token'
+							small={
+								<>
+									You can find it on a computer under settings &gt; Web Clipper.
+									Make sure to enable the webclipper as well.
+								</>
+							}
+							input={setToken}
+						/>
+
+						<TextInput
+							name='joplinPort'
+							label='Joplin Port'
+							small={
+								<>
+									You'll find this at the top of the same menu you found the
+									access token in. It should be 41184, but if not, you'll have
+									to type in that number in the box above
+								</>
+							}
+							input={setPort}
+						/>
+
+						<TextInput
+							name='notebookId'
+							label='Notebook ID'
+							small={
+								<>
+									For where you want to place it all in Joplin This one is a bit
+									more complicated to figure out, so I'll provide you with a
+									tool to fetch all your notebook IDs easily below
+								</>
+							}
+							input={setNoteId}
+						/>
 					</div>
 				</fieldset>
 				<fieldset className='anilist-stuff'>
@@ -174,23 +150,20 @@ export default function AniListForm() {
 						</legend>
 					</div>
 					<div className='fields'>
-						<div className='field-group'>
-							<label htmlFor='anilist-user-id' className='field-label'>
-								AniList user ID
-							</label>
-							<input
-								name='anilistUserId'
-								type='text'
-								id='anilist-user-id'
-								className='field-input'
-								ref={register}
-							/>
-							<small id='access-token-help' className='field-description'>
-								You can find this by going to your profile, opening your profile picture in a new
-								tab and looking at the URL (page link). The user ID should be the numbers where I
-								put X's in my example here: user/avatar/large/b<b>XXXXXX</b>-sga2KA4fswV1.png
-							</small>
-						</div>
+						<TextInput
+							name='anilistUserId'
+							label='AniList user ID'
+							small={
+								<>
+									You can find this by going to your profile, opening your
+									profile picture in a new tab and looking at the URL (page
+									link). The user ID should be the numbers where I put X's in my
+									example here: user/avatar/large/b<b>XXXXXX</b>
+									-sga2KA4fswV1.png
+								</>
+							}
+							input={setUserId}
+						/>
 					</div>
 				</fieldset>
 				<fieldset className='submit-info'>
@@ -201,29 +174,27 @@ export default function AniListForm() {
 					</div>
 					<div className='fields'>
 						<div className='form-group'>
-							<input
+							<Checkbox
 								name='fetchAllPosts'
-								className='checkbox'
-								type='checkbox'
-								id='fetch-all-posts'
-								ref={register}
+								label='I want to fetch every post (defaults to latest 50 if not)'
+								small={
+									<>
+										It's only recommended to use this if you have never fetched
+										your posts before or if you suspect you've written or
+										recieved more than 50 posts/messages since last time you
+										used this backup. That or if you know you've recieved
+										likes/comments on older posts that you want to backup
+									</>
+								}
+								input={setFetchAll}
+								checked={fetchAll}
 							/>
-							<label className='field-label'>
-								I want to fetch every post (defaults to latest 50 if not)
-							</label>
-							<small id='access-token-help' className='field-description'>
-								It's only recommended to use this if you have never fetched your posts before or if
-								you suspect you've written or recieved more than 50 posts/messages since last time
-								you used this backup. That or if you know you've recieved likes/comments on older
-								posts that you want to backup
-							</small>
 							<input
 								name='submit'
 								type='submit'
 								defaultValue='Backup Posts to Joplin'
 								id='fetch-posts'
 								className='submit-button'
-								ref={register}
 							/>
 							<div id='completed' className='alert-success' />
 						</div>
